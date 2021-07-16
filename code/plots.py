@@ -16,7 +16,7 @@ def plot_images(images,
                 fig_size = (15, 15), 
                 font_size = 10, 
                 cmap = None, 
-                n_max_cols = 5, 
+                n_max_cols = 3, 
                 titles_bottom_h_align = 'center', 
                 titles_bottom_v_align = 'top', 
                 titles_bottom_pos = (16, 32)):
@@ -89,5 +89,5 @@ def plot_images(images,
                      horizontalalignment = titles_bottom_h_align,
                      fontsize = font_size - 3)
 
-    plt.tight_layout()
+    #plt.tight_layout()
     plt.show()
