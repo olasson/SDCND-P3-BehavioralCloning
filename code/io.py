@@ -7,10 +7,12 @@ import json
 import pickle
 import numpy as np
 from glob import glob
+from pandas import read_csv
 from os.path import join as path_join
 
 # Custom imports
 from code.misc import parse_file_path
+
 
 
 # Wrappers
@@ -27,9 +29,10 @@ def load_image(file_path):
 
     return image
 
-# Internals
+# Images
 
-def _load_images(file_paths):
+def load_images(file_paths):
+
     """
     Load a set of images into memory
     Inputs
@@ -156,7 +159,7 @@ def glob_images(folder_path, n_max_images = 50):
     if len(file_paths) == 0:
         file_paths = glob_file_paths(folder_path, n_max_samples = 50, file_ext = '.jpg')
 
-    images, file_names = _load_images(file_paths)
+    images, file_names = load_images(file_paths)
 
     return images, file_names
 
@@ -211,6 +214,33 @@ def load_pickled_data(file_path, key1 = 'key1', key2 = 'key2'):
     data2 = data[key2]
 
     return data1, data2
+
+
+def load_sim_log(path):
+    """
+    Load the contents of the driving_log.csv
+    
+    Inputs
+    ----------
+    path: str
+        Path to driving_log.csv
+       
+    Outputs
+    -------
+    angles: numpy.ndarray
+        Numpy array of floats containing one angle for each cam
+    file_paths: numpy.ndarray
+        Numpy array of strings containing paths to a set of images
+        
+    """
+
+    sim_log = read_csv(path, names = ['center', 'left', 'right', 'angle', 'throttle', 'break', 'speed'])
+
+    file_paths = sim_log[['center', 'left', 'right']].to_numpy().flatten()
+
+    angles = sim_log[['angle', 'angle', 'angle']].to_numpy().flatten()
+
+    return angles, file_paths
 
 
 
