@@ -8,6 +8,7 @@ from os.path import join as path_join
 from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path
 from code.io import load_config, glob_images
 from code.plots import plot_images
+from code.prepare import prepare_data
 
 FOLDER_DATA = './data'
 
@@ -20,7 +21,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description = 'Behavioral Cloning')
 
-    # Images
+    # Data
 
     parser.add_argument(
         '--driving_log',
@@ -30,13 +31,14 @@ if __name__ == "__main__":
         help = 'File path to a .csv file containing the driving log from the simulator.',
     )
 
+
     # Config
 
     parser.add_argument(
-        '--config',
+        '--model_config',
         type = str,
         nargs = '?',    
-        default = '',
+        default = None,
         help = 'Path to a .json file containing project config.',
     )
 
@@ -52,11 +54,11 @@ if __name__ == "__main__":
 
     # Init paths
 
-    file_path_config = args.config
+    file_path_config = args.model_config
 
     # Init config
 
-    config = load_config(file_path_config)
+    model_config = load_config(file_path_config)
 
     # Init values
 
@@ -67,6 +69,9 @@ if __name__ == "__main__":
     # Folder setup
 
     folder_guard(FOLDER_DATA)
+
+    if model_config is not None:
+        print(INFO_PREFIX + 'Using config from: ' + file_path_config)
 
 
 
