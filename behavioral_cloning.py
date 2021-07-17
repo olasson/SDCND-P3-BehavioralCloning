@@ -5,7 +5,7 @@ import argparse
 from os.path import join as path_join
 
 # Custom imports
-from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets
+from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets, is_file_type
 from code.io import load_config, load_sim_log, load_images
 from code.plots import plot_images
 from code.prepare import prepare_data
@@ -33,11 +33,21 @@ if __name__ == "__main__":
 
     # Show
 
+
+    parser.add_argument(
+        '--show_images',
+        type = str,
+        nargs = '?',
+        default = '',
+        help = 'Show a set of images from the .csv file or a pickled (.p) file.',
+    )
+    """
     parser.add_argument(
         '--show_images',
         action = 'store_true',
         help = 'Show a random subset of images from the simulator.'
     )
+    """
 
 
     # Config
@@ -65,6 +75,8 @@ if __name__ == "__main__":
     file_path_config = args.model_config
     file_path_driving_log = args.driving_log
 
+    file_path_show_images = args.show_images
+
     # Init config
 
     model_config = load_config(file_path_config)
@@ -73,7 +85,8 @@ if __name__ == "__main__":
 
     # Init flags
 
-    flag_show_images = args.show_images
+    flag_show_csv = is_file_type(file_path_show_images, '.csv')
+    flag_show_pickled = is_file_type(file_path_show_images, '.p')
 
     flag_force_save = args.force_save
 
@@ -81,24 +94,33 @@ if __name__ == "__main__":
 
     folder_guard(FOLDER_DATA)
 
-    if flag_show_images:
+    
+    if flag_show_csv or flag_show_pickled:
 
-        if not file_exists(file_path_driving_log):
-            print(ERROR_PREFIX + 'You are trying to show images, but the driving log at: ' + file_path_driving_log + ' does not exist!')
-            exit()
+        print(INFO_PREFIX + 'Showing images from: ' + file_path_show_images)
 
-        n_triplets = 3
+        if flag_show_csv:
 
-        file_paths = load_sim_log(file_path_driving_log)[1]
-        file_paths = pick_triplets(file_paths, n_triplets, dtype = 'U128')
+            n_triplets = 3
 
-        images, file_names = load_images(file_paths)
+            file_paths = load_sim_log(file_path_driving_log)[1]
+            file_paths = pick_triplets(file_paths, n_triplets, dtype = 'U128')
+
+            images, file_names = load_images(file_paths)
+
+            file_paths = None
+        else:
+            pass
+
+        
 
         titles = n_triplets * ['Left', 'Center', 'Right']
         title_fig_window = 'images_driving_log'
 
         plot_images(images, titles, title_fig_window)
 
+        
+    
 
 
     if model_config is not None:
