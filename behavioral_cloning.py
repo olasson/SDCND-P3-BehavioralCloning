@@ -6,7 +6,7 @@ from os.path import join as path_join
 
 # Custom imports
 from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets
-from code.io import load_config, glob_images, load_sim_log, load_images
+from code.io import load_config, load_sim_log, load_images
 from code.plots import plot_images
 from code.prepare import prepare_data
 
