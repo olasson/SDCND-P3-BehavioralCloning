@@ -21,16 +21,6 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description = 'Behavioral Cloning')
 
-    # Data
-
-    parser.add_argument(
-        '--driving_log',
-        type = str,
-        nargs = '?',
-        default = './data/driving_log.csv',
-        help = 'File path to a .csv file containing the driving log from the simulator.',
-    )
-
     # Show
 
 
@@ -41,13 +31,6 @@ if __name__ == "__main__":
         default = '',
         help = 'Show a set of images from the .csv file or a pickled (.p) file.',
     )
-    """
-    parser.add_argument(
-        '--show_images',
-        action = 'store_true',
-        help = 'Show a random subset of images from the simulator.'
-    )
-    """
 
 
     # Config
@@ -73,7 +56,6 @@ if __name__ == "__main__":
     # Init paths
 
     file_path_config = args.model_config
-    file_path_driving_log = args.driving_log
 
     file_path_show_images = args.show_images
 
@@ -103,7 +85,7 @@ if __name__ == "__main__":
 
             n_triplets = 3
 
-            file_paths = load_sim_log(file_path_driving_log)[1]
+            file_paths = load_sim_log(file_path_show_images)[1]
             file_paths = pick_triplets(file_paths, n_triplets, dtype = 'U128')
 
             images, file_names = load_images(file_paths)
@@ -111,8 +93,6 @@ if __name__ == "__main__":
             file_paths = None
         else:
             pass
-
-        
 
         titles = n_triplets * ['Left', 'Center', 'Right']
         title_fig_window = 'images_driving_log'
@@ -125,6 +105,8 @@ if __name__ == "__main__":
 
     if model_config is not None:
         print(INFO_PREFIX + 'Using config from: ' + file_path_config)
+
+        file_path_driving_log = model_config["driving_log"]
 
 
 
