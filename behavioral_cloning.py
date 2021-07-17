@@ -43,6 +43,12 @@ if __name__ == "__main__":
         help = 'Path to a .json file containing project config.',
     )
 
+    parser.add_argument(
+        '--preview',
+        action = 'store_true',
+        help = 'If enabled, the user can preview the steering angle distribution without processing the images.'
+    )
+
     # Misc
 
     parser.add_argument(
@@ -69,6 +75,8 @@ if __name__ == "__main__":
 
     flag_show_csv = is_file_type(file_path_show_images, '.csv')
     flag_show_pickled = is_file_type(file_path_show_images, '.p')
+
+    flag_data_preview = args.preview
 
     flag_force_save = args.force_save
 
@@ -107,6 +115,21 @@ if __name__ == "__main__":
         print(INFO_PREFIX + 'Using config from: ' + file_path_config)
 
         file_path_driving_log = model_config["driving_log"]
+
+        if not file_exists(file_path_driving_log):
+            print(ERROR_PREFIX + 'The driving log at: ' + file_path_driving_log + ' does not exist!')
+            exit()
+
+        angle_correction = model_config["angle_correction"]
+        angle_flatten = model_config["angle_flatten"]
+
+        if flag_data_preview:
+
+            print(INFO_PREFIX + 'Previewing data!')
+
+            prepare_data(file_path_driving_log, angle_correction, angle_flatten)
+
+
 
 
 
