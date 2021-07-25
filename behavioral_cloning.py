@@ -7,7 +7,7 @@ from os.path import join as path_join
 # Custom imports
 from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets, is_file_type
 from code.io import load_config, load_sim_log, load_images
-from code.plots import plot_images
+from code.plots import plot_images, plot_distribution
 from code.prepare import prepare_data
 
 FOLDER_DATA = './data'
@@ -127,7 +127,11 @@ if __name__ == "__main__":
 
             print(INFO_PREFIX + 'Previewing data!')
 
-            prepare_data(file_path_driving_log, angle_correction, angle_flatten)
+            angles, file_names = prepare_data(file_path_driving_log, angle_correction, angle_flatten)
+
+            if flag_data_preview:
+                plot_distribution(angles)
+                exit()
 
 
 
