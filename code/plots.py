@@ -91,3 +91,58 @@ def plot_images(images,
 
     #plt.tight_layout()
     plt.show()
+
+
+def plot_distribution(angles, title = None, title_fig_window = None, angle_correction = 0.0, angle_flatten = 0.0,
+                      bins = 'auto', fig_size = (15, 6), font_size = 12):
+
+    """
+    Plot a distribution of angles.
+    
+    Inputs
+    ----------
+    angles : numpy.ndarray
+        Numpy array containing a set of angles.
+    title: (None | str)
+        A title for the plot.
+    title_fig_window: (None | string)
+        Title for the figure window
+    angle_correction: float
+        Angle correction used on 'angles'
+    angle_flatten: float
+        Flattening used on 'angles'
+    bins: (str | int)
+        Number of bins to use.
+    fig_size: (int, int)
+        Tuple specifying figure width and height in inches
+    font_size: int
+        Fontsize of 'titles'
+    Outputs
+    -------
+    plt.figure
+        Figure angle distribution
+    
+    """
+
+    fig = plt.figure(title_fig_window, figsize = fig_size)
+
+    plt.hist(angles, bins = bins)
+
+    if title is not None:
+        plt.title(title)
+
+    plt.axvline(np.mean(angles, axis = 0), color = 'k', linestyle = 'dashed', linewidth = 1)
+
+    info_str = 'Number of samples: ' + str(len(angles)) 
+    info_str += '\n Angle correction: ' + str(angle_correction)
+    info_str += '\n Flatten factor: ' + str(angle_flatten)
+    info_str += '\n Mean value: ---'
+
+    fig.text(0.9, 0.9, info_str,
+            verticalalignment = 'top', 
+            horizontalalignment = 'center',
+            color = 'black', fontsize = font_size)
+
+    plt.tight_layout()
+
+    plt.show()
