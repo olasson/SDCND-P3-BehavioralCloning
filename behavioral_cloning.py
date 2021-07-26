@@ -130,18 +130,20 @@ if __name__ == "__main__":
         angle_correction = model_config["angle_correction"]
         angle_flatten = model_config["angle_flatten"]
 
+
+        print(INFO_PREFIX + 'Previewing data!')
+
+        angles, images = prepare_data(file_path_driving_log, angle_correction, angle_flatten, 
+                                      augment = flag_data_augment, preview = flag_data_preview)
+
         if flag_data_preview:
+            plot_distribution(angles, 
+                              'Steering angle distribution', 'steering_angle_dist',
+                              angle_correction, angle_flatten)
 
-            print(INFO_PREFIX + 'Previewing data!')
-
-            angles, images = prepare_data(file_path_driving_log, angle_correction, angle_flatten, 
-                                          augment = flag_data_augment, preview = flag_data_preview)
-
-            if flag_data_preview:
-                plot_distribution(angles, 
-                                  'Steering angle distribution', 'steering_angle_dist',
-                                  angle_correction, angle_flatten)
-                exit()
+            # Exit when the preview flag is set, since 'images = None'
+            print(INFO_PREFIX + 'Preview flag (--preview) set, exiting program!')
+            exit()
 
 
 
