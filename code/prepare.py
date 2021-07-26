@@ -4,6 +4,11 @@ from code.io import load_sim_log
 
 N_CAMS = 3
 
+# Prepared image size
+N_ROWS_PREPARED = 64 
+N_COLS_PREPARED = 128 
+N_CHANNELS_PREPARED = 3
+
 
 def _find_indices_to_delete(file_names, alpha):
     """
@@ -102,12 +107,22 @@ def prepare_sim_log(angles, file_names, angle_correction, angle_flatten):
 
     return angles, file_names
 
-def prepare_data(file_path, angle_correction, angle_flatten):
+def prepare_data(file_path, angle_correction, angle_flatten, augment = True, preview = False):
 
     angles, file_names = load_sim_log(file_path)
 
     angles, file_names = prepare_sim_log(angles, file_names, angle_correction, angle_flatten)
 
-    return angles, file_names
+    if augment:
+        n_samples = 3 * len(angles)
+    else:
+        n_samples = len(angles)
+
+    if preview:
+        images_out = None
+    else:
+        images_out = np.zeros((n_samples, N_ROWS_PREPARED, N_COLS_PREPARED, N_CHANNELS_PREPARED), dtype = 'uint8')
+
+    return angles, images_out
 
 
