@@ -44,6 +44,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        '--augment',
+        action = 'store_true',
+        help = 'If enabled, data will be augmented (flipped, translated and brightness correction).'
+    )
+
+    parser.add_argument(
         '--preview',
         action = 'store_true',
         help = 'If enabled, the user can preview the steering angle distribution without processing the images.'
@@ -77,6 +83,7 @@ if __name__ == "__main__":
     flag_show_pickled = is_file_type(file_path_show_images, '.p')
 
     flag_data_preview = args.preview
+    flag_data_augment = args.augment
 
     flag_force_save = args.force_save
 
@@ -127,7 +134,8 @@ if __name__ == "__main__":
 
             print(INFO_PREFIX + 'Previewing data!')
 
-            angles, file_names = prepare_data(file_path_driving_log, angle_correction, angle_flatten)
+            angles, images = prepare_data(file_path_driving_log, angle_correction, angle_flatten, 
+                                          augment = flag_data_augment, preview = flag_data_preview)
 
             if flag_data_preview:
                 plot_distribution(angles, 
