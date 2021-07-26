@@ -10,27 +10,27 @@ N_COLS_PREPARED = 128
 N_CHANNELS_PREPARED = 3
 
 
-def _find_indices_to_delete(file_names, alpha):
+def _find_indices_to_delete(file_paths, flatten_factor):
     """
-    Find a set of indices in a file_namesset to remove in order to make it more uniform 
+    Find a set of indices from 'file_paths' to remove in order to make it more uniform 
     
     Inputs
     ----------
-    file_names: numpy.ndarray
-        Numpy array containing scalar values.
+    file_paths: numpy.ndarray
+        Numpy array containing a set of file_paths.
     alpha: float
         Scalar value determining how many indicies should be dropped. 
        
     Outputs
     -------
     indices: numpy.ndarray
-        Numpy array containing a set of indicies that should be removed from 'file_names' to make it more uniform.
+        Numpy array containing a set of indicies that should be removed from 'file_paths' to make it more uniform.
         
     """
 
-    values, bins = np.histogram(file_names, bins = 'auto')
+    values, bins = np.histogram(file_paths, bins = 'auto')
 
-    n_max_samples_in_bin = (np.mean(values) * (1.0 / alpha)).astype('uint32')
+    n_max_samples_in_bin = (np.mean(values) * (1.0 / flatten_factor)).astype('uint32')
 
     n_bins = len(bins)
 
@@ -44,24 +44,24 @@ def _find_indices_to_delete(file_names, alpha):
 
         if i == (n_bins - 2):
             # Last bin is closed
-            file_names_in_bin = np.where((file_names >= bin_left) & (file_names <= bin_right))[0]
+            file_paths_in_bin = np.where((file_paths >= bin_left) & (file_paths <= bin_right))[0]
         else:
             # All bins except the last is half open (ref numpy docs)
-            file_names_in_bin = np.where((file_names >= bin_left) & (file_names < bin_right))[0]
+            file_paths_in_bin = np.where((file_paths >= bin_left) & (file_paths < bin_right))[0]
         
-        n_samples_in_bin = len(file_names_in_bin)
+        n_samples_in_bin = len(file_paths_in_bin)
 
         if n_samples_in_bin > n_max_samples_in_bin:
             n_indices_to_remove = n_samples_in_bin - n_max_samples_in_bin
 
-            remove = np.random.choice(file_names_in_bin, size = n_indices_to_remove, replace = False)
+            remove = np.random.choice(file_paths_in_bin, size = n_indices_to_remove, replace = False)
 
             indices.extend(remove)
 
     return indices
 
 
-def prepare_sim_log(angles, file_names, angle_correction, angle_flatten):
+def prepare_sim_log(angles, file_paths, angle_correction, angle_flatten):
     """
     Prepare the sim log data for further use
     
@@ -69,19 +69,19 @@ def prepare_sim_log(angles, file_names, angle_correction, angle_flatten):
     ----------
     angles: numpy.ndarray
         Numpy array containing a set of angles
-    file_names: numpy.ndarray
+    file_paths: numpy.ndarray
         Numpy array containing a set of file names
     angle_correction: float
         Angle correction which will be applied to left and right angles
     angle_flatten: int
-        Scalar determining how many samples from 'angles' and 'file_names' to be removed
+        Scalar determining how many samples from 'angles' and 'file_paths' to be removed
        
     Outputs
     -------
     angles: numpy.ndarray
         Numpy array containing a set of angles 
-    file_names: numpy.ndarray
-        Numpy array containing a set of file names. len(angles) == len(file_names)
+    file_paths: numpy.ndarray
+        Numpy array containing a set of file names. len(angles) == len(file_paths)
     """
 
     if angle_correction != 0.0:
@@ -102,16 +102,16 @@ def prepare_sim_log(angles, file_names, angle_correction, angle_flatten):
 
         angles = np.delete(angles, indices, axis = 0)
 
-        file_names = np.delete(file_names, indices, axis = 0)
+        file_paths = np.delete(file_paths, indices, axis = 0)
 
 
-    return angles, file_names
+    return angles, file_paths
 
 def prepare_data(file_path, angle_correction, angle_flatten, augment = False, preview = False):
 
-    angles, file_names = load_sim_log(file_path)
+    angles, file_paths = load_sim_log(file_path)
 
-    angles, file_names = prepare_sim_log(angles, file_names, angle_correction, angle_flatten)
+    angles, file_paths = prepare_sim_log(angles, file_paths, angle_correction, angle_flatten)
 
     n_samples = len(angles)
 
