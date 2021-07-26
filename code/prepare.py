@@ -132,6 +132,11 @@ def prepare_data(file_path, angle_correction, angle_flatten, augment = False, pr
         # Original 
         angles_out[i] = angles[i]
 
+        if augment:
+
+            # Flipped
+            angles_out[i + n_samples] = -angles_out[i]
+
     return angles_out, images_out
 
 
