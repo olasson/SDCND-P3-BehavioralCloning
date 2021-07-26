@@ -1,13 +1,26 @@
+import cv2
 import numpy as np
 
-from code.io import load_sim_log
+from code.io import load_sim_log, load_image
 
 N_CAMS = 3
+
+
+# Original image size
+N_ROWS = 160 
+N_COLS = 320 
+N_CHANNELS = 3
 
 # Prepared image size
 N_ROWS_PREPARED = 64 
 N_COLS_PREPARED = 128 
 N_CHANNELS_PREPARED = 3
+
+CROP_ROWS_TOP = 60 
+CROP_ROWS_BOTTOM = 25
+
+CROP_COLS_LEFT = 15 
+CROP_COLS_RIGHT = 15
 
 
 def _find_indices_to_delete(file_paths, flatten_factor):
@@ -106,6 +119,19 @@ def prepare_sim_log(angles, file_paths, angle_correction, angle_flatten):
 
     return angles, file_paths
 
+
+def prepare_image(image, T_x = None, brightness_factor = None):
+
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
+
+    image = image[CROP_ROWS_TOP:N_ROWS - CROP_ROWS_BOTTOM, CROP_COLS_LEFT:N_COLS - CROP_COLS_RIGHT, :]
+
+    image = cv2.resize(image, (N_COLS_PREPARED, N_ROWS_PREPARED), interpolation = cv2.INTER_AREA)
+
+    image = cv2.GaussianBlur(image, (3, 3), 0)
+
+    return image
+
 def prepare_data(file_path, angle_correction, angle_flatten, augment = False, preview = False):
 
     angles, file_paths = load_sim_log(file_path)
@@ -135,6 +161,13 @@ def prepare_data(file_path, angle_correction, angle_flatten, augment = False, pr
 
             # Flipped
             angles_out[i + n_samples] = -angles_out[i]
+
+        if not preview:
+
+            image = load_image(file_paths[i])
+
+            # Original
+            images_out = prepare_image(image)
 
     return angles_out, images_out
 
