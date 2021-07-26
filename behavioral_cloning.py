@@ -130,7 +130,9 @@ if __name__ == "__main__":
             angles, file_names = prepare_data(file_path_driving_log, angle_correction, angle_flatten)
 
             if flag_data_preview:
-                plot_distribution(angles)
+                plot_distribution(angles, 
+                                  'Steering angle distribution', 'steering_angle_dist',
+                                  angle_correction, angle_flatten)
                 exit()
 
 
