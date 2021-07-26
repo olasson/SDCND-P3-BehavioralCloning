@@ -107,22 +107,31 @@ def prepare_sim_log(angles, file_names, angle_correction, angle_flatten):
 
     return angles, file_names
 
-def prepare_data(file_path, angle_correction, angle_flatten, augment = True, preview = False):
+def prepare_data(file_path, angle_correction, angle_flatten, augment = False, preview = False):
 
     angles, file_names = load_sim_log(file_path)
 
     angles, file_names = prepare_sim_log(angles, file_names, angle_correction, angle_flatten)
 
+    n_samples = len(angles)
+
     if augment:
-        n_samples = 3 * len(angles)
+        n_samples_total = 3 * n_samples
     else:
-        n_samples = len(angles)
+        n_samples_total = n_samples
 
     if preview:
         images_out = None
     else:
-        images_out = np.zeros((n_samples, N_ROWS_PREPARED, N_COLS_PREPARED, N_CHANNELS_PREPARED), dtype = 'uint8')
+        images_out = np.zeros((n_samples_total, N_ROWS_PREPARED, N_COLS_PREPARED, N_CHANNELS_PREPARED), dtype = 'uint8')
 
-    return angles, images_out
+    angles_out = np.zeros((n_samples_total), dtype = np.float32)
+
+    for i in range(n_samples):
+
+        # Original 
+        angles_out[i] = angles[i]
+
+    return angles_out, images_out
 
 
