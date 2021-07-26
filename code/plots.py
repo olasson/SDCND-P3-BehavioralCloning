@@ -131,12 +131,13 @@ def plot_distribution(angles, title = None, title_fig_window = None, angle_corre
     if title is not None:
         plt.title(title)
 
-    plt.axvline(np.mean(angles, axis = 0), color = 'k', linestyle = 'dashed', linewidth = 1)
+    mean_value = np.mean(angles, axis = 0)
+    plt.axvline(mean_value, color = 'k', linestyle = 'dashed', linewidth = 1)
 
     info_str = 'Number of samples: ' + str(len(angles)) 
     info_str += '\n Angle correction: ' + str(angle_correction)
     info_str += '\n Flatten factor: ' + str(angle_flatten)
-    info_str += '\n Mean value: ---'
+    info_str += '\n Mean value: ' + str(round(mean_value, 2))
 
     fig.text(0.9, 0.9, info_str,
             verticalalignment = 'top', 
