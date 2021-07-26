@@ -12,20 +12,19 @@ N_CHANNELS_PREPARED = 3
 
 def _find_indices_to_delete(file_paths, flatten_factor):
     """
-    Find a set of indices from 'file_paths' to remove in order to make it more uniform 
+    Find a set of indices from 'file_paths' to remove in order to only load images of interest.
     
     Inputs
     ----------
     file_paths: numpy.ndarray
         Numpy array containing a set of file_paths.
-    alpha: float
+    flatten_factor: float
         Scalar value determining how many indicies should be dropped. 
        
     Outputs
     -------
     indices: numpy.ndarray
-        Numpy array containing a set of indicies that should be removed from 'file_paths' to make it more uniform.
-        
+        Numpy array containing a set of indicies that should be removed from 'file_paths'.   
     """
 
     values, bins = np.histogram(file_paths, bins = 'auto')
@@ -70,7 +69,7 @@ def prepare_sim_log(angles, file_paths, angle_correction, angle_flatten):
     angles: numpy.ndarray
         Numpy array containing a set of angles
     file_paths: numpy.ndarray
-        Numpy array containing a set of file names
+        Numpy array containing a set of file paths
     angle_correction: float
         Angle correction which will be applied to left and right angles
     angle_flatten: int
@@ -81,7 +80,7 @@ def prepare_sim_log(angles, file_paths, angle_correction, angle_flatten):
     angles: numpy.ndarray
         Numpy array containing a set of angles 
     file_paths: numpy.ndarray
-        Numpy array containing a set of file names. len(angles) == len(file_paths)
+        Numpy array containing a set of file paths. len(angles) == len(file_paths)
     """
 
     if angle_correction != 0.0:
