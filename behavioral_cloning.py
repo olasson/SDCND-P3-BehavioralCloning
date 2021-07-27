@@ -7,7 +7,7 @@ from os.path import join as path_join
 # Custom imports
 from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets, is_file_type
 from code.io import load_config, load_sim_log, load_images, save_pickled_data, load_pickled_data
-from code.plots import plot_images, plot_distribution
+from code.plots import plot_images, plot_distribution, plot_model_history
 from code.prepare import prepare_data
 from code.model import train_model
 
@@ -178,8 +178,12 @@ if __name__ == "__main__":
         n_max_epochs = model_config["n_max_epochs"]
 
         model, history = train_model(images, angles, lrn_rate, batch_size, n_max_epochs)
-        
 
+        model_name = parse_file_path(file_path_model)[1]
+        model_name = model_name[:len(model_name) - len('.h5')]
+        
+        file_path_save = path_join(FOLDER_MODELS, model_name + '.png')
+        plot_model_history(history, model_name, lrn_rate, batch_size, n_max_epochs, file_path_save)
 
 
 
