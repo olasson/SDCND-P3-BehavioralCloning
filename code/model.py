@@ -45,3 +45,53 @@ def nVidia_model():
     model.add(Dense(1))
 
     return model
+
+
+def train_model(images, angles, lrn_rate, batch_size, n_max_epochs):
+    """
+    Train a model with callback and save it. 
+    
+    Inputs
+    ----------
+    images : numpy.ndarray
+        Numpy array containing a set of images.
+    angles : numpy.ndarray
+        Numpy array containing a set of angles.
+    lrn_rate : float
+        Model learning rate.
+    batch_size : int
+        Model batch_size.
+    n_max_epochs : int
+        The maximum number of epochs the model can train for.
+       
+    Outputs
+    -------
+    model: Keras model object.
+        Keras sequential model.
+    history: numpy.ndarray
+        Keras model history object.
+        
+    """
+
+    model = nVidia_model()
+
+    model.compile(optimizer = Adam(lr = lrn_rate), loss = 'mse', metrics=['mean_squared_error'])
+
+    # The callback will stop training if the model does not see a certain improvement in 'val_loss' over 3 epochs. 
+    early_stopping = EarlyStopping(monitor = 'val_loss', 
+                                   patience = 3,
+                                   verbose = 0, 
+                                   mode = 'min')
+
+    history = model.fit(images, angles, batch_size = batch_size, epochs = n_max_epochs, 
+                        validation_split = 0.2, callbacks = [early_stopping])
+
+    return model, history
+
+def save_model(file_path, model):
+    """
+    
+    Wrapper for model.save
+    """
+
+    model.save(file_path)
