@@ -6,7 +6,7 @@ from os.path import join as path_join
 
 # Custom imports
 from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets, is_file_type
-from code.io import load_config, load_sim_log, load_images, save_pickled_data
+from code.io import load_config, load_sim_log, load_images, save_pickled_data, load_pickled_data
 from code.plots import plot_images, plot_distribution
 from code.prepare import prepare_data
 
@@ -133,9 +133,8 @@ if __name__ == "__main__":
         file_path_model = model_config["model_path"]
         file_path_data_prepared = model_config["data_prepared"]
 
-        if file_exists(file_path_model) and file_exists(file_path_data_prepared) and (not flag_force_save):
-            print(WARNING_PREFIX + 'The model: ' + file_path_model + ' and dataset ' + file_path_data_prepared + ' already exists!')
-            print(WARNING_PREFIX + 'Use --force_save to overwrite them!')
+        if file_exists(file_path_model) and (not flag_force_save):
+            print(WARNING_PREFIX + 'The model: ' + file_path_model + ' already exists! Use --force_save to overwrite it!')
             exit()
 
         print(INFO_PREFIX + 'Using config from: ' + file_path_config)
@@ -143,21 +142,37 @@ if __name__ == "__main__":
         angle_correction = model_config["angle_correction"]
         angle_flatten = model_config["angle_flatten"]
 
-        print(INFO_PREFIX + 'Previewing data!')
+        if not file_exists(file_path_data_prepared):
 
-        angles, images = prepare_data(file_path_driving_log, angle_correction, angle_flatten, 
-                                      augment = flag_data_augment, preview = flag_data_preview)
+            print(INFO_PREFIX + 'Preparing data!')
+
+            angles, images = prepare_data(file_path_driving_log, angle_correction, angle_flatten, 
+                                          augment = flag_data_augment, preview = flag_data_preview)
+            
+            if images is not None:
+
+                print(INFO_PREFIX + 'Saving preparing data at: ' + file_path_data_prepared)
+
+                save_pickled_data(file_path_data_prepared, angles, images)
+
+        else:
+            
+            print(INFO_PREFIX + 'Loading prepared data located at: ' + file_path_data_prepared)
+
+            angles, images = load_pickled_data(file_path_data_prepared)
 
         if flag_data_preview:
+            
+            print(INFO_PREFIX + 'Previewing data!')
+
             plot_distribution(angles, 
                               'Steering angle distribution', 'steering_angle_dist',
                               angle_correction, angle_flatten)
 
-            # Exit when the preview flag is set, since 'images = None'
             print(INFO_PREFIX + 'Preview flag (--preview) set, exiting program!')
             exit()
 
-        save_pickled_data(file_path_data_prepared, angles, images)
+        
 
 
 
