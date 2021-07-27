@@ -1,0 +1,47 @@
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, Activation, Flatten, Dropout, Lambda, Dense
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import load_model
+
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+
+# Prevent tensorflow from using too much GPU memory
+config = ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.2
+config.gpu_options.allow_growth = True
+session = InteractiveSession(config = config)
+session.close()
+
+from code.constants import N_ROWS_PREPARED, N_COLS_PREPARED, N_CHANNELS_PREPARED
+
+ACTIVATION_FUNCTION = 'elu'
+
+# Based on https://arxiv.org/pdf/1604.07316v1.pdf
+def nVidia_model():
+    
+    model = Sequential()
+
+    model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape = (N_ROWS_PREPARED, N_COLS_PREPARED, N_CHANNELS_PREPARED)))
+
+    model.add(Conv2D(24, (5, 5), activation = ACTIVATION_FUNCTION, strides = (2, 2)))
+
+    model.add(Conv2D(36, (5, 5), activation = ACTIVATION_FUNCTION, strides = (2, 2)))
+
+    model.add(Conv2D(48, (5, 5), activation = ACTIVATION_FUNCTION, strides = (2, 2)))
+
+    model.add(Conv2D(64, (3, 3), activation = ACTIVATION_FUNCTION))
+
+    model.add(Conv2D(64, (3, 3), activation = ACTIVATION_FUNCTION))
+
+    model.add(Dropout(0.3))
+
+    model.add(Flatten())
+
+    model.add(Dense(100, activation = ACTIVATION_FUNCTION))
+    model.add(Dense(50, activation = ACTIVATION_FUNCTION))
+    model.add(Dense(10, activation = ACTIVATION_FUNCTION))
+    model.add(Dense(1))
+
+    return model
