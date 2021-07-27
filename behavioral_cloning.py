@@ -5,7 +5,7 @@ import argparse
 from os.path import join as path_join
 
 # Custom imports
-from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets, is_file_type
+from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets_1D, pick_triplets_images, is_file_type
 from code.io import load_config, load_sim_log, load_images, save_pickled_data, load_pickled_data
 from code.plots import plot_images, plot_distribution, plot_model_history
 from code.prepare import prepare_data
@@ -32,6 +32,13 @@ if __name__ == "__main__":
         nargs = '?',
         default = '',
         help = 'Show a set of images from the .csv file or a pickled (.p) file.',
+    )
+
+    parser.add_argument(
+        '--n_triplets',
+        type = int,
+        default = 3,
+        help = 'The number of triplets (left cam, center cam, right cam) in the image plot.'
     )
 
 
@@ -75,7 +82,7 @@ if __name__ == "__main__":
 
     # Init config 
 
-    if not file_exists(file_path_config):
+    if (file_path_config is not None) and not file_exists(file_path_config):
         print(ERROR_PREFIX + 'The model config located at: ' + file_path_config + ' does not exist!')
         exit()
 
@@ -104,23 +111,27 @@ if __name__ == "__main__":
 
         print(INFO_PREFIX + 'Showing images from: ' + file_path_show_images)
 
+        n_triplets = args.n_triplets
+
         if flag_show_csv:
 
-            n_triplets = 3
-
             file_paths = load_sim_log(file_path_show_images)[1]
-            file_paths = pick_triplets(file_paths, n_triplets, dtype = 'U128')
+            file_paths = pick_triplets_1D(file_paths, n_triplets, dtype = 'U128')
 
-            images, file_names = load_images(file_paths)
+            #exit()
+
+            images, _ = load_images(file_paths)
 
             file_paths = None
+
         else:
-            pass
+            _, images = load_pickled_data(file_path_show_images)
+            images = pick_triplets_images(images, n_triplets)
+
 
         titles = n_triplets * ['Left', 'Center', 'Right']
-        title_fig_window = 'images_driving_log'
-
-        plot_images(images, titles, title_fig_window)
+        
+        plot_images(images, titles, title_fig_window = file_path_show_images)
 
 
     if model_config is not None:
