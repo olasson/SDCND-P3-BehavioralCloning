@@ -9,6 +9,7 @@ from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_pat
 from code.io import load_config, load_sim_log, load_images, save_pickled_data, load_pickled_data
 from code.plots import plot_images, plot_distribution
 from code.prepare import prepare_data
+from code.model import train_model
 
 FOLDER_DATA = './data'
 FOLDER_MODELS = './models'
@@ -172,6 +173,11 @@ if __name__ == "__main__":
             print(INFO_PREFIX + 'Preview flag (--preview) set, exiting program!')
             exit()
 
+        lrn_rate = model_config["lrn_rate"]
+        batch_size = model_config["batch_size"]
+        n_max_epochs = model_config["n_max_epochs"]
+
+        model, history = train_model(images, angles, lrn_rate, batch_size, n_max_epochs)
         
 
 
