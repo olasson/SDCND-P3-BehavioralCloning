@@ -72,6 +72,15 @@ if __name__ == "__main__":
 
     file_path_show_images = args.show_images
 
+    # Init config 
+
+    if not file_exists(file_path_config):
+        print(ERROR_PREFIX + 'The model config located at: ' + file_path_config + ' does not exist!')
+        exit()
+
+    model_config = load_config(file_path_config)
+
+
     # Init values
 
     # Init flags
@@ -115,10 +124,6 @@ if __name__ == "__main__":
 
     if model_config is not None:
 
-        model_config = load_config(file_path_config)
-
-        print(INFO_PREFIX + 'Using config from: ' + file_path_config)
-
         file_path_driving_log = model_config["driving_log"]
 
         if not file_exists(file_path_driving_log):
@@ -132,6 +137,8 @@ if __name__ == "__main__":
             print(WARNING_PREFIX + 'The model: ' + file_path_model + ' and dataset ' + file_path_data_prepared + ' already exists!')
             print(WARNING_PREFIX + 'Use --force_save to overwrite them!')
             exit()
+
+        print(INFO_PREFIX + 'Using config from: ' + file_path_config)
 
         angle_correction = model_config["angle_correction"]
         angle_flatten = model_config["angle_flatten"]
