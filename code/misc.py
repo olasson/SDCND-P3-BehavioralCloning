@@ -97,37 +97,97 @@ def parse_file_path(file_path):
     return folder_path, file_name
 
 
-def pick_triplets(data, n_triplets, dtype = np.float32):
+def _pick_triplets(len_data, n_triplets):
     """
     Pick out sets of 'cam triplets'  (left, center, right). 
     
     Inputs
     ----------
-    data: numpy.ndarray
-        Numpy array containing scalar values.
+    len_data: int
+        Length of the array.
     n_triplets: int
-        The number of triplets. 
+        The desired number of triplets.
        
     Outputs
     -------
-    data_out: numpy.ndarray
-        Numpy array containing a set of 'n_triplets'.
+    indices: numpy.ndarray
+        Numpy array containing the indicies of the triplets.
         
     """
 
     n_samples = n_triplets * N_CAMS
 
-    data_out = np.zeros((n_samples), dtype = dtype)
+    indices = np.zeros((n_samples), dtype = np.int)
 
-    indices = range(0, len(data), N_CAMS)
+    _indices = range(0, len_data, N_CAMS)
 
     for i in range(0, n_samples, N_CAMS):
-        k = np.random.choice(indices)
-        data_out[i] = data[k + 1] # Left
-        data_out[i + 1] = data[k] # Center
-        data_out[i + 2] = data[k + 2] # Right
+        k = np.random.choice(_indices)
+        indices[i] = k + 1 # Left
+        indices[i + 1] = k # Center
+        indices[i + 2] = k + 2 # Right
+
+    return indices
+
+def pick_triplets_1D(data_1D, n_triplets, dtype = np.float32):
+    """
+    Pick out triplets from a 1D dataset.
+    
+    Inputs
+    ----------
+    data_1D: numpy.ndarray
+        Numpy array containing 1D data.
+    n_triplets: int
+        The desired number of triplets.
+    dtype: class.type
+        The desired data type of 'data_out'.
+        
+    Outputs
+    -------
+    images_samples: numpy.ndarray
+        Numpy array containing samples from 'images'.
+    """
+    
+    indices = _pick_triplets(len(data_1D), n_triplets)
+
+    n_samples = len(indices)
+
+    data_out = np.zeros((n_samples), dtype = dtype)
+
+    for i, index in enumerate(indices):
+        data_out[i] = data_1D[index]
 
     return data_out
+
+def pick_triplets_images(images, n_triplets):
+    """
+    Pick out triplets from a set of images.
+    
+    Inputs
+    ----------
+    images: numpy.ndarray
+        Numpy array containing a set of images.
+    n_triplets: int
+        The desired number of triplets.        
+        
+    Outputs
+    -------
+    images_samples: numpy.ndarray
+        Numpy array containing samples from 'images'.
+    """
+
+    indices = _pick_triplets(len(images), n_triplets)
+
+    n_samples = len(indices)
+
+    n_rows, n_cols, n_channels = images[0].shape
+
+    images_samples = np.zeros((n_samples,n_rows, n_cols, n_channels), dtype = np.uint8)
+
+    for i, index in enumerate(indices):
+        images_samples[i] = images[index]
+
+    return images_samples
 
 
 def is_file_type(file_path, file_type):
