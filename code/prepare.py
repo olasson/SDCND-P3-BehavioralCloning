@@ -4,18 +4,12 @@ import numpy as np
 from code.io import load_sim_log, load_image
 from code.augment import translate_image, adjust_brightness
 
-N_CAMS = 3
-
+from code.constants import N_CAMS, N_ROWS_PREPARED, N_COLS_PREPARED, N_CHANNELS_PREPARED
 
 # Original image size
 N_ROWS = 160 
 N_COLS = 320 
 N_CHANNELS = 3
-
-# Prepared image size
-N_ROWS_PREPARED = 64 
-N_COLS_PREPARED = 128 
-N_CHANNELS_PREPARED = 3
 
 CROP_ROWS_TOP = 60 
 CROP_ROWS_BOTTOM = 25
@@ -24,7 +18,7 @@ CROP_COLS_LEFT = 15
 CROP_COLS_RIGHT = 15
 
 # Conversion factor for translating angles
-ANGLE_PER_PIXEL = 0.01
+RAD_PER_PIXEL = 0.01
 
 
 def _find_indices_to_delete(data_1D, flatten_factor):
@@ -174,7 +168,7 @@ def prepare_data(file_path, angle_correction, angle_flatten, augment = False, pr
 
             # Translated
             T_x = int(np.random.randint(-CROP_COLS_LEFT, CROP_COLS_RIGHT))
-            angles_out[i + (2 * n_samples)] = angles_out[i] + (ANGLE_PER_PIXEL * T_x)
+            angles_out[i + (2 * n_samples)] = angles_out[i] + (RAD_PER_PIXEL * T_x)
 
         if not preview:
 
@@ -187,6 +181,11 @@ def prepare_data(file_path, angle_correction, angle_flatten, augment = False, pr
 
                 # Flipped
                 images_out[i + n_samples] = cv2.flip(images_out[i], 1)
+
+                brightness_factor = np.random.uniform(0.8, 1.5)
+                images_out[i + (2 * n_samples)] = prepare_image(image, T_x, brightness_factor)
+
+    angles_out = np.array(np.clip(angles_out, a_min = -1.0, a_max = 1.0))
 
     return angles_out, images_out
 

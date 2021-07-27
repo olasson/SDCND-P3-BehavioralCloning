@@ -5,7 +5,7 @@ This file contains some miscellaneous helper functions and os wrappers.
 import os
 import numpy as np
 
-N_CAMS = 3
+from code.constants import N_CAMS
 
 def file_exists(file_path):
     """
