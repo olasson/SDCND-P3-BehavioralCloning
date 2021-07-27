@@ -9,7 +9,7 @@ from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_pat
 from code.io import load_config, load_sim_log, load_images, save_pickled_data, load_pickled_data
 from code.plots import plot_images, plot_distribution, plot_model_history
 from code.prepare import prepare_data
-from code.model import train_model
+from code.model import train_model, save_model, load_model
 
 FOLDER_DATA = './data'
 FOLDER_MODELS = './models'
@@ -118,8 +118,6 @@ if __name__ == "__main__":
             file_paths = load_sim_log(file_path_show_images)[1]
             file_paths = pick_triplets_1D(file_paths, n_triplets, dtype = 'U128')
 
-            #exit()
-
             images, _ = load_images(file_paths)
 
             file_paths = None
@@ -142,12 +140,10 @@ if __name__ == "__main__":
             print(ERROR_PREFIX + 'The driving log located at: ' + file_path_driving_log + ' does not exist!')
             exit()
 
-        file_path_model = model_config["model_path"]
+        
         file_path_data_prepared = model_config["data_prepared"]
 
-        if file_exists(file_path_model) and (not flag_force_save):
-            print(WARNING_PREFIX + 'The model: ' + file_path_model + ' already exists! Use --force_save to overwrite it!')
-            exit()
+
 
         print(INFO_PREFIX + 'Using config from: ' + file_path_config)
 
@@ -188,13 +184,26 @@ if __name__ == "__main__":
         batch_size = model_config["batch_size"]
         n_max_epochs = model_config["n_max_epochs"]
 
-        model, history = train_model(images, angles, lrn_rate, batch_size, n_max_epochs)
+        file_path_model = model_config["model_path"]
 
-        model_name = parse_file_path(file_path_model)[1]
-        model_name = model_name[:len(model_name) - len('.h5')]
+        if not file_exists(file_path_model):
+
+            print(INFO_PREFIX + 'Training model: ' + file_path_model)
+            model, history = train_model(images, angles, lrn_rate, batch_size, n_max_epochs)
+
+            print(INFO_PREFIX + 'Saving model: ' + file_path_model)
+            save_model(file_path_model, model)
+
+            model_name = parse_file_path(file_path_model)[1]
+            model_name = model_name[:len(model_name) - len('.h5')]
         
-        file_path_save = path_join(FOLDER_MODELS, model_name + '.png')
-        plot_model_history(history, model_name, lrn_rate, batch_size, n_max_epochs, file_path_save)
+            file_path_save = path_join(FOLDER_MODELS, model_name + '.png')
+            plot_model_history(history, model_name, lrn_rate, batch_size, n_max_epochs, file_path_save)
+
+        else:
+            print(INFO_PREFIX + 'Loading model: ' + file_path_model)
+            model = load_model(file_path_model)
+
 
 
 
