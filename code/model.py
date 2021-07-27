@@ -1,3 +1,8 @@
+
+# Suppress some of the "standard" tensorflow output
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, Activation, Flatten, Dropout, Lambda, Dense
 from tensorflow.keras.callbacks import EarlyStopping
