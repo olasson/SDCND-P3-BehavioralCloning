@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-def adjust_brightness(yuv_image, alpha):
+def adjust_brightness(yuv_image, brightness_factor):
     """
     Adjust brightness of a YUV image
     
@@ -9,7 +9,7 @@ def adjust_brightness(yuv_image, alpha):
     ----------
     yuv_image: numpy.ndarray
         Array containing a single YUV image
-    alpha: float
+    brightness_factor: float
         Scalar value to darken (lower values) or brighten (higher values) 
        
     Outputs
@@ -22,7 +22,7 @@ def adjust_brightness(yuv_image, alpha):
     # Select Y-channel
     Y = yuv_image[:, :, 0]
 
-    Y = np.where(Y * alpha <= 255, Y * alpha, 255)
+    Y = np.where(Y * brightness_factor <= 255, Y * brightness_factor, 255)
 
     yuv_image_out = np.copy(yuv_image)
 
