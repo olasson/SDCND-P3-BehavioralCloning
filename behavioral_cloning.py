@@ -6,11 +6,12 @@ from os.path import join as path_join
 
 # Custom imports
 from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets, is_file_type
-from code.io import load_config, load_sim_log, load_images
+from code.io import load_config, load_sim_log, load_images, save_pickled_data
 from code.plots import plot_images, plot_distribution
 from code.prepare import prepare_data
 
 FOLDER_DATA = './data'
+FOLDER_MODELS = './models'
 
 INFO_PREFIX = 'INFO_MAIN: '
 WARNING_PREFIX = 'WARNING_MAIN: '
@@ -71,10 +72,6 @@ if __name__ == "__main__":
 
     file_path_show_images = args.show_images
 
-    # Init config
-
-    model_config = load_config(file_path_config)
-
     # Init values
 
     # Init flags
@@ -90,6 +87,7 @@ if __name__ == "__main__":
     # Folder setup
 
     folder_guard(FOLDER_DATA)
+    folder_guard(FOLDER_MODELS)
 
     
     if flag_show_csv or flag_show_pickled:
@@ -114,22 +112,29 @@ if __name__ == "__main__":
 
         plot_images(images, titles, title_fig_window)
 
-        
-    
-
 
     if model_config is not None:
+
+        model_config = load_config(file_path_config)
+
         print(INFO_PREFIX + 'Using config from: ' + file_path_config)
 
         file_path_driving_log = model_config["driving_log"]
 
         if not file_exists(file_path_driving_log):
-            print(ERROR_PREFIX + 'The driving log at: ' + file_path_driving_log + ' does not exist!')
+            print(ERROR_PREFIX + 'The driving log located at: ' + file_path_driving_log + ' does not exist!')
+            exit()
+
+        file_path_model = model_config["model_path"]
+        file_path_data_prepared = model_config["data_prepared"]
+
+        if file_exists(file_path_model) and file_exists(file_path_data_prepared) and (not flag_force_save):
+            print(WARNING_PREFIX + 'The model: ' + file_path_model + ' and dataset ' + file_path_data_prepared + ' already exists!')
+            print(WARNING_PREFIX + 'Use --force_save to overwrite them!')
             exit()
 
         angle_correction = model_config["angle_correction"]
         angle_flatten = model_config["angle_flatten"]
-
 
         print(INFO_PREFIX + 'Previewing data!')
 
@@ -144,6 +149,8 @@ if __name__ == "__main__":
             # Exit when the preview flag is set, since 'images = None'
             print(INFO_PREFIX + 'Preview flag (--preview) set, exiting program!')
             exit()
+
+        save_pickled_data(file_path_data_prepared, angles, images)
 
 
 
