@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from code.io import load_sim_log, load_image
+from code.augment import translate_image, adjust_brightness
 
 N_CAMS = 3
 
@@ -22,25 +23,28 @@ CROP_ROWS_BOTTOM = 25
 CROP_COLS_LEFT = 15 
 CROP_COLS_RIGHT = 15
 
+# Conversion factor for translating angles
+ANGLE_PER_PIXEL = 0.01
 
-def _find_indices_to_delete(file_paths, flatten_factor):
+
+def _find_indices_to_delete(data_1D, flatten_factor):
     """
-    Find a set of indices from 'file_paths' to remove in order to only load images of interest.
+    Flatted a data distribution by findining indicies to delete.
     
     Inputs
     ----------
-    file_paths: numpy.ndarray
-        Numpy array containing a set of file_paths.
+    data_1D: numpy.ndarray
+        Numpy array containing a 1D data set.
     flatten_factor: float
         Scalar value determining how many indicies should be dropped. 
        
     Outputs
     -------
     indices: numpy.ndarray
-        Numpy array containing a set of indicies that should be removed from 'file_paths'.   
+        Numpy array containing a set of indicies that should be removed from 'data_1D' to make it more uniform.   
     """
 
-    values, bins = np.histogram(file_paths, bins = 'auto')
+    values, bins = np.histogram(data_1D, bins = 'auto')
 
     n_max_samples_in_bin = (np.mean(values) * (1.0 / flatten_factor)).astype('uint32')
 
@@ -56,17 +60,17 @@ def _find_indices_to_delete(file_paths, flatten_factor):
 
         if i == (n_bins - 2):
             # Last bin is closed
-            file_paths_in_bin = np.where((file_paths >= bin_left) & (file_paths <= bin_right))[0]
+            samples_in_bin = np.where((data_1D >= bin_left) & (data_1D <= bin_right))[0]
         else:
             # All bins except the last is half open (ref numpy docs)
-            file_paths_in_bin = np.where((file_paths >= bin_left) & (file_paths < bin_right))[0]
+            samples_in_bin = np.where((data_1D >= bin_left) & (data_1D < bin_right))[0]
         
-        n_samples_in_bin = len(file_paths_in_bin)
+        n_samples_in_bin = len(samples_in_bin)
 
         if n_samples_in_bin > n_max_samples_in_bin:
             n_indices_to_remove = n_samples_in_bin - n_max_samples_in_bin
 
-            remove = np.random.choice(file_paths_in_bin, size = n_indices_to_remove, replace = False)
+            remove = np.random.choice(samples_in_bin, size = n_indices_to_remove, replace = False)
 
             indices.extend(remove)
 
@@ -122,9 +126,15 @@ def prepare_sim_log(angles, file_paths, angle_correction, angle_flatten):
 
 def prepare_image(image, T_x = None, brightness_factor = None):
 
+    if T_x is not None:
+        image = translate_image(image, T_x)
+
     image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV)
 
     image = image[CROP_ROWS_TOP:N_ROWS - CROP_ROWS_BOTTOM, CROP_COLS_LEFT:N_COLS - CROP_COLS_RIGHT, :]
+
+    if brightness_factor is not None:
+        image = adjust_brightness(image, brightness_factor)
 
     image = cv2.resize(image, (N_COLS_PREPARED, N_ROWS_PREPARED), interpolation = cv2.INTER_AREA)
 
@@ -162,12 +172,21 @@ def prepare_data(file_path, angle_correction, angle_flatten, augment = False, pr
             # Flipped
             angles_out[i + n_samples] = -angles_out[i]
 
+            # Translated
+            T_x = int(np.random.randint(-CROP_COLS_LEFT, CROP_COLS_RIGHT))
+            angles_out[i + (2 * n_samples)] = angles_out[i] + (ANGLE_PER_PIXEL * T_x)
+
         if not preview:
 
             image = load_image(file_paths[i])
 
             # Original
-            images_out = prepare_image(image)
+            images_out[i] = prepare_image(image)
+
+            if augment:
+
+                # Flipped
+                images_out[i + n_samples] = cv2.flip(images_out[i], 1)
 
     return angles_out, images_out
 
