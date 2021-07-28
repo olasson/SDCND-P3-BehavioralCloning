@@ -6,16 +6,18 @@ from shutil import rmtree
 from os.path import join as path_join
 
 # Custom imports
-from code.misc import file_exists, folder_guard, folder_is_empty, parse_file_path, pick_triplets_1D, pick_triplets_images, is_file_type
+from code.misc import file_exists, folder_guard, folder_is_empty, get_model_name, pick_triplets_1D, pick_triplets_images, is_file_type
 from code.io import load_config, load_sim_log, load_images, save_pickled_data, load_pickled_data
 from code.plots import plot_images, plot_distribution, plot_model_history
 from code.prepare import prepare_data
 from code.model import train_model, save_model, load_model
 from code.drive import drive_sim_car
+from code.video import make_video
 
-FOLDER_DATA = './data'
-FOLDER_SIM_RECORDING = path_join(FOLDER_DATA, 'recorded')
-FOLDER_MODELS = './models'
+FOLDER_PATH_DATA = './data'
+FOLDER_PATH_SIM_RECORDING = path_join(FOLDER_PATH_DATA, 'recorded')
+FOLDER_PATH_VIDEOS = './videos'
+FOLDER_PATH_MODELS = './models'
 
 INFO_PREFIX = 'INFO_MAIN: '
 WARNING_PREFIX = 'WARNING_MAIN: '
@@ -90,6 +92,14 @@ if __name__ == "__main__":
         help = 'The speed of the car in the simulator.'
     )
 
+    parser.add_argument(
+        '--track_name',
+        type = str,
+        nargs = '?',
+        default = 'lake',
+        help = 'Name of the simulator track used in the recording.',
+    )
+
     # Misc
 
     parser.add_argument(
@@ -120,8 +130,7 @@ if __name__ == "__main__":
     # Init values
 
     file_path_model = None
-
-
+    model_name = None
 
     # Init flags
 
@@ -138,9 +147,9 @@ if __name__ == "__main__":
 
     # Folder setup
 
-    folder_guard(FOLDER_DATA)
-    folder_guard(FOLDER_SIM_RECORDING)
-    folder_guard(FOLDER_MODELS)
+    folder_guard(FOLDER_PATH_DATA)
+    folder_guard(FOLDER_PATH_SIM_RECORDING)
+    folder_guard(FOLDER_PATH_MODELS)
 
     
     if flag_show_csv or flag_show_pickled:
@@ -230,39 +239,45 @@ if __name__ == "__main__":
             print(INFO_PREFIX + 'Saving model: ' + file_path_model)
             save_model(file_path_model, model)
 
-            model_name = parse_file_path(file_path_model)[1]
-            model_name = model_name[:len(model_name) - len('.h5')]
+            model_name = get_model_name(file_path_model)
         
-            file_path_save = path_join(FOLDER_MODELS, model_name + '.png')
+            file_path_save = path_join(FOLDER_PATH_MODELS, model_name + '.png')
             plot_model_history(history, model_name, lrn_rate, batch_size, n_max_epochs, file_path_save)
 
         else:
             print(INFO_PREFIX + 'Loading model: ' + file_path_model)
             model = load_model(file_path_model)
 
-    if flag_sim_drive:
+        if flag_sim_drive:
 
-        if not file_exists(file_path_model):
-            print(ERROR_PREFIX + 'You are trying to drive the simulator car, but have provided no model!')
-            exit()
+            print(INFO_PREFIX + 'Driving using model: ' + file_path_model)
 
-        print(INFO_PREFIX + 'Driving using model: ' + file_path_model)
+            if flag_sim_record:
 
-        if flag_sim_record:
+                if not folder_is_empty(FOLDER_PATH_SIM_RECORDING):
+                    print(INFO_PREFIX + 'Cleaning up previous recording!')
+                    rmtree(FOLDER_PATH_SIM_RECORDING)
+                    folder_guard(FOLDER_PATH_SIM_RECORDING)
 
-            if not folder_is_empty(FOLDER_SIM_RECORDING):
-                print(INFO_PREFIX + 'Cleaning up previous recording!')
-                rmtree(FOLDER_SIM_RECORDING)
-                folder_guard(FOLDER_SIM_RECORDING)
+                print(INFO_PREFIX + 'Recording current run!')
+                folder_path_sim_recording = FOLDER_PATH_SIM_RECORDING
+            else:
+                folder_path_sim_recording = ''
 
-            print(INFO_PREFIX + 'Recording current run!')
-            folder_path_sim_recording = FOLDER_SIM_RECORDING
-        else:
-            folder_path_sim_recording = ''
+            drive_sim_car(model, folder_path_sim_recording, args.speed)
 
-        sim_speed = args.speed
+            if not folder_is_empty(folder_path_sim_recording):
 
-        drive_sim_car(model, folder_path_sim_recording, sim_speed)
+                if model_name is None:
+                    model_name = get_model_name(file_path_model)
+
+                file_path_video_save = path_join(FOLDER_PATH_VIDEOS, args.track_name + '_' + model_name + '.mp4')
+
+                print(model_name)
+                print(file_path_video_save)
+
+                make_video(folder_path_sim_recording, file_path_video_save, 25)
+
 
 
 
