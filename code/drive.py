@@ -16,7 +16,7 @@ from os.path import join as path_join
 from code.prepare import prepare_image
 
 
-def drive_sim_car(model, path_images_save, set_speed):
+def drive_sim_car(model, folder_path_sim_record, set_speed):
     """
     Function wrapper to make script callable.
     
@@ -24,7 +24,7 @@ def drive_sim_car(model, path_images_save, set_speed):
     ----------
     model: Keras sequential model
         Keras model object
-    path_images_save: str
+    folder_path_sim_record: str
         Path specifying where recorded images should be saved.
     set_speed: int
         Initial speed value for the simulator.
@@ -91,9 +91,9 @@ def drive_sim_car(model, path_images_save, set_speed):
             send_control(steering_angle, throttle)
 
             # save frame
-            if path_images_save != '':
+            if folder_path_sim_record != '':
                 timestamp = datetime.utcnow().strftime('%Y_%m_%d_%H_%M_%S_%f')[:-3]
-                image_filename = path_join(path_images_save, timestamp)
+                image_filename = path_join(folder_path_sim_record, timestamp)
                 image.save('{}.jpg'.format(image_filename))
         else:
             # NOTE: DON'T EDIT THIS.
