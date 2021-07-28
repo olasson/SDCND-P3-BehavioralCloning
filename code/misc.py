@@ -96,6 +96,13 @@ def parse_file_path(file_path):
 
     return folder_path, file_name
 
+def get_model_name(file_path_model):
+
+    tmp = parse_file_path(file_path_model)[1]
+    model_name = tmp[:len(tmp) - len('.h5')]
+
+    return model_name
+
 
 def _pick_triplets(len_data, n_triplets):
     """
