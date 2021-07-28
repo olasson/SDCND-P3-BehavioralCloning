@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 import argparse
+from shutil import rmtree
 from os.path import join as path_join
 
 # Custom imports
@@ -10,8 +11,10 @@ from code.io import load_config, load_sim_log, load_images, save_pickled_data, l
 from code.plots import plot_images, plot_distribution, plot_model_history
 from code.prepare import prepare_data
 from code.model import train_model, save_model, load_model
+from code.drive import drive_sim_car
 
 FOLDER_DATA = './data'
+FOLDER_SIM_RECORDING = path_join(FOLDER_DATA, 'recorded')
 FOLDER_MODELS = './models'
 
 INFO_PREFIX = 'INFO_MAIN: '
@@ -52,6 +55,8 @@ if __name__ == "__main__":
         help = 'Path to a .json file containing project config.',
     )
 
+    # Data
+
     parser.add_argument(
         '--augment',
         action = 'store_true',
@@ -64,6 +69,27 @@ if __name__ == "__main__":
         help = 'If enabled, the user can preview the steering angle distribution without processing the images.'
     )
 
+    # Simulator
+
+    parser.add_argument(
+        '--drive',
+        action = 'store_true',
+        help = 'If enabled, the program will attempt to drive the simulator car with the model provided by --model_config.'
+    )
+
+    parser.add_argument(
+        '--record',
+        action = 'store_true',
+        help = 'If enabled, the simulator run will be recorded.'
+    )
+
+    parser.add_argument(
+        '--speed',
+        type = int,
+        default = 25,
+        help = 'The speed of the car in the simulator.'
+    )
+
     # Misc
 
     parser.add_argument(
@@ -71,6 +97,8 @@ if __name__ == "__main__":
         action = 'store_true',
         help = 'If enabled, permits overwriting existing data.'
     )
+
+
 
     args = parser.parse_args()
 
@@ -91,6 +119,10 @@ if __name__ == "__main__":
 
     # Init values
 
+    file_path_model = None
+
+
+
     # Init flags
 
     flag_show_csv = is_file_type(file_path_show_images, '.csv')
@@ -99,11 +131,15 @@ if __name__ == "__main__":
     flag_data_preview = args.preview
     flag_data_augment = args.augment
 
+    flag_sim_drive = args.drive
+    flag_sim_record = args.record
+
     flag_force_save = args.force_save
 
     # Folder setup
 
     folder_guard(FOLDER_DATA)
+    folder_guard(FOLDER_SIM_RECORDING)
     folder_guard(FOLDER_MODELS)
 
     
@@ -203,6 +239,30 @@ if __name__ == "__main__":
         else:
             print(INFO_PREFIX + 'Loading model: ' + file_path_model)
             model = load_model(file_path_model)
+
+    if flag_sim_drive:
+
+        if not file_exists(file_path_model):
+            print(ERROR_PREFIX + 'You are trying to drive the simulator car, but have provided no model!')
+            exit()
+
+        print(INFO_PREFIX + 'Driving using model: ' + file_path_model)
+
+        if flag_sim_record:
+
+            if not folder_is_empty(FOLDER_SIM_RECORDING):
+                print(INFO_PREFIX + 'Cleaning up previous recording!')
+                rmtree(FOLDER_SIM_RECORDING)
+                folder_guard(FOLDER_SIM_RECORDING)
+
+            print(INFO_PREFIX + 'Recording current run!')
+            folder_path_sim_recording = FOLDER_SIM_RECORDING
+        else:
+            folder_path_sim_recording = ''
+
+        sim_speed = args.speed
+
+        drive_sim_car(model, folder_path_sim_recording, sim_speed)
 
 
 
