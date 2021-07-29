@@ -1,0 +1,11 @@
+{
+    "model_path": "./models/nVidia_01.h5",
+    "driving_log": "./data/driving_log.csv",
+    "data_prepared": "./data/data_prepared_01.p",
+    "augment": 1,
+    "angle_correction": 0.2,
+    "angle_flatten": 0.6,
+    "lrn_rate": 0.001,
+    "n_max_epochs": 50,
+    "batch_size": 64
+}
