@@ -2,7 +2,6 @@
 This file contains function(s) for visualizing data.
 """
 
-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,38 +20,38 @@ def plot_images(images,
                 titles_bottom_v_align = 'top', 
                 titles_bottom_pos = (16, 32)):
     """
-    Show a set of images
+    Show a set of images.
     
     Inputs
     ----------
-    images : numpy.ndarray
-        A set of images, RGB or grayscale
+    images: numpy.ndarray
+        A set of images, RGB or grayscale.
     titles_top: (None | list)
-        A set of image titles to be displayed on top of an image
+        A set of image titles to be displayed on top of an image.
     titles_bottom: (None | list)
-        A set of image titles to be displayed at the bottom of an image
+        A set of image titles to be displayed at the bottom of an image.
     title_fig_window: (None | string)
-        Title for the figure window
+        Title for the figure window.
     figsize: (int, int)
-        Tuple specifying figure width and height in inches
+        Tuple specifying figure width and height in inches.
     fontsize: int
-        Fontsize of 'titles_top' and 'titles_bottom'
+        Fontsize of 'titles_top' and 'titles_bottom'.
     cmap: (None | string)
         RGB or grayscale
     n_max_cols: int
-        Maximum number of columns allowed in figure
+        Maximum number of columns allowed in figure.
     titles_bottom_h_align: string
-        Horizontal alignment of 'titles_bottom'
+        Horizontal alignment of 'titles_bottom'.
     titles_bottom_v_align: string
-        Vertical alignment of 'titles_bottom'
+        Vertical alignment of 'titles_bottom'.
     titles_bottom_pos: (int, int)
-        Tuple containing the position of 'titles_bottom'
+        Tuple containing the position of 'titles_bottom'.
     titles_bottom_transform: string
-        Coordinate system used by matplotlib for 'titles_bottom'
+        Coordinate system used by matplotlib for 'titles_bottom'.
     Outputs
     -------
     plt.figure
-        Figure showing 'images' in an (n_rows x n_cols) layout
+        Figure showing 'images' in an (n_rows x n_cols) layout.
     
     """
 
@@ -71,12 +70,7 @@ def plot_images(images,
     for i in range(n_images):
         plt.subplot(n_rows, n_cols, i + 1)
 
-        # Expect that images are loaded with openCV - BGR representation
-        #image = cv2.cvtColor(images[i].astype('uint8'), cv2.COLOR_BGR2RGB)
-
-        image = images[i].astype('uint8')
-
-        plt.imshow(image, cmap = cmap)
+        plt.imshow(images[i].astype('uint8'), cmap = cmap)
 
         plt.xticks([])
         plt.yticks([])
@@ -91,7 +85,6 @@ def plot_images(images,
                      horizontalalignment = titles_bottom_h_align,
                      fontsize = font_size - 3)
 
-    #plt.tight_layout()
     plt.show()
 
 
@@ -205,7 +198,7 @@ def plot_model_history(history, model_name = None, lrn_rate = None, batch_size =
 
     stopping_epoch = len(history.history['loss'])
 
-    # ---------- Construct a title for the plot ---------- # 
+
 
     model_name_title = 'Model Name: '+ model_name + ' | '
 
@@ -223,10 +216,10 @@ def plot_model_history(history, model_name = None, lrn_rate = None, batch_size =
         epochs_title = 'Stopp/Max (Epoch): ' + str(stopping_epoch) + '/' + str(n_max_epochs)
     else:
         epochs_title = 'Stopp Epoch: ' + str(stopping_epoch)
+        
 
     plt.title(model_name_title + lrn_rate_title + batch_size_title + epochs_title)
 
-    # ---------- Misc ---------- #
     
     fig.text(0.5, 0, text,
                 verticalalignment = 'top', 
@@ -238,9 +231,6 @@ def plot_model_history(history, model_name = None, lrn_rate = None, batch_size =
     fig.legend(handles, labels, loc = (0.7, 0.5))
     fig.tight_layout()
 
-    # ---------- Show or save ---------- #
-    
-    # If the user has opted to save the model history, don't show the plot directly
     if file_path_save is not None:
         fig.savefig(file_path_save, bbox_inches = 'tight')
         plt.close()

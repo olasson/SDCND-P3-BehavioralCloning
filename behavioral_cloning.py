@@ -1,3 +1,6 @@
+"""
+This file contains the main script. It implements a very simple command line tool for solving the project tasks.
+"""
 
 import cv2
 import numpy as np
@@ -25,11 +28,9 @@ ERROR_PREFIX = 'ERROR_MAIN: '
 
 if __name__ == "__main__":
 
-
     parser = argparse.ArgumentParser(description = 'Behavioral Cloning')
 
     # Show
-
 
     parser.add_argument(
         '--show_images',
@@ -102,8 +103,6 @@ if __name__ == "__main__":
         help = 'If enabled, permits overwriting existing data.'
     )
 
-
-
     args = parser.parse_args()
 
     # Init paths
@@ -169,6 +168,7 @@ if __name__ == "__main__":
         
         plot_images(images, titles, title_fig_window = file_path_show_images)
 
+# Main part
 
     if model_config is not None:
 
@@ -178,10 +178,7 @@ if __name__ == "__main__":
             print(ERROR_PREFIX + 'The driving log located at: ' + file_path_driving_log + ' does not exist!')
             exit()
 
-        
         file_path_data_prepared = model_config["data_prepared"]
-
-
 
         print(INFO_PREFIX + 'Using config from: ' + file_path_config)
 
@@ -269,18 +266,5 @@ if __name__ == "__main__":
 
                 file_path_video_save = path_join(FOLDER_PATH_VIDEOS, args.track_name + '_' + model_name + '.mp4')
 
-                print(model_name)
-                print(file_path_video_save)
-
                 make_video(folder_path_sim_recording, file_path_video_save, 25)
-
-
-
-
-
-
-
-
-
-
 

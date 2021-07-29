@@ -1,3 +1,7 @@
+"""
+This file contains the model implementation used in the project.
+"""
+
 
 # Suppress some of the "standard" tensorflow output
 import os
@@ -52,6 +56,12 @@ def nVidia_model():
     return model
 
 
+def save_model(file_path, model):
+
+    # Wrapper
+
+    model.save(file_path)
+
 def train_model(images, angles, lrn_rate, batch_size, n_max_epochs):
     """
     Train a model with callback and save it. 
@@ -93,10 +103,4 @@ def train_model(images, angles, lrn_rate, batch_size, n_max_epochs):
 
     return model, history
 
-def save_model(file_path, model):
-    """
-    
-    Wrapper for model.save
-    """
 
-    model.save(file_path)

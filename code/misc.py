@@ -31,6 +31,32 @@ def file_exists(file_path):
 
     return True
 
+def is_file_type(file_path, file_type):
+    """
+    Check if a file has the expected file type or not.
+    
+    Inputs
+    ----------
+    file_path : str
+        Path to a file.
+    file_type : str
+        File type extension.
+       
+    Outputs
+    -------
+    bool
+        True if file exists and is of type 'file_type', false otherwise.
+        
+    """
+
+    if not file_exists(file_path):
+        return False
+
+    if file_path.endswith(file_type):
+        return True
+
+    return False
+
 def folder_guard(folder_path):
     """
     Checks if a folder exists and creates it if it does not.
@@ -71,7 +97,6 @@ def folder_is_empty(folder_path):
     return True
 
 def parse_file_path(file_path):
-
     """
     Parse out the folder path and file path from a full path.
     
@@ -97,12 +122,26 @@ def parse_file_path(file_path):
     return folder_path, file_name
 
 def get_model_name(file_path_model):
+    """
+    Parse out the model name from a file_path.
+    
+    Inputs
+    ----------
+    file_path: string
+        Path to a .h5 model file - './path/to/model.h5'
+        
+    Outputs
+    -------
+    model_name: string
+        The model name contained in 'file_path_model' - 'model.h5'
+    """
 
     tmp = parse_file_path(file_path_model)[1]
     model_name = tmp[:len(tmp) - len('.h5')]
 
     return model_name
 
+# Internal
 
 def _pick_triplets(len_data, n_triplets):
     """
@@ -197,30 +236,6 @@ def pick_triplets_images(images, n_triplets):
     return images_samples
 
 
-def is_file_type(file_path, file_type):
-    """
-    Check if a file has the expected file type or not.
-    
-    Inputs
-    ----------
-    file_path : str
-        Path to a file.
-    file_type : str
-        File type extension.
-       
-    Outputs
-    -------
-    bool
-        True if file exists and is of type 'file_type', false otherwise.
-        
-    """
 
-    if not file_exists(file_path):
-        return False
-
-    if file_path.endswith(file_type):
-        return True
-
-    return False
 
 

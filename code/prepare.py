@@ -1,3 +1,7 @@
+"""
+This file contains functions for preparing the simulator data for use by a model.
+"""
+
 import cv2
 import numpy as np
 
@@ -119,6 +123,23 @@ def prepare_sim_log(angles, file_paths, angle_correction, angle_flatten):
 
 
 def prepare_image(image, T_x = None, brightness_factor = None):
+    """
+    Prepare a single image for use by a model
+    
+    Inputs
+    ----------
+    image: numpy.ndarray
+        Numpy array containing a single RGB image
+    T_x: (None | int)
+        Number of pixels the image will be translated in the x-dir (along a row)
+    alpha: (None | float)
+        Scalar value to darken (lower values) or brighten (higher values)
+       
+    Outputs
+    -------
+    image: numpy.ndarray
+        Numpy array containing a single prepared YUV image.
+    """
 
     if T_x is not None:
         image = translate_image(image, T_x)
@@ -137,6 +158,29 @@ def prepare_image(image, T_x = None, brightness_factor = None):
     return image
 
 def prepare_data(file_path, angle_correction, angle_flatten, augment = False, preview = False):
+    """
+    Prepare a dataset (images, angles) for use by a model.
+    
+    Inputs
+    ----------
+    path: str
+        Path to the driving_log.csv from the simulator.
+    angle_correction: float
+        Angle correction which will be applied to left and right angles
+    angle_flatten: float
+        Scalar determining how many samples from 'angles' and 'file_names' to be removed
+    preview: bool
+        If True,  'prepare_data' will return angles, and images_out = None. Useful for previewing how an angle distribution will look.
+    augment: bool
+        If True, augmentation (flip, translate and adjust brightness) will be applied to the dataset. 
+       
+    Outputs
+    -------
+    angles_out: numpy.ndarray
+        Numpy array containing a set of prepared angles.
+    images_out: (None | numpy.ndarray)
+        Numpy array containing a set of prepared images.
+    """
 
     angles, file_paths = load_sim_log(file_path)
 
@@ -145,6 +189,7 @@ def prepare_data(file_path, angle_correction, angle_flatten, augment = False, pr
     n_samples = len(angles)
 
     if augment:
+        # The multiplier allocates space for (Original + Flipped + Translated) 
         n_samples_total = 3 * n_samples
     else:
         n_samples_total = n_samples

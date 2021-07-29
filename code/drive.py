@@ -1,3 +1,8 @@
+"""
+This file contains a modified version of the drive.py script provided by Udacity. It is no longer a standalone script, but
+integrated to work with the main script behavioral_cloning.py
+"""
+
 import base64
 from datetime import datetime
 import os

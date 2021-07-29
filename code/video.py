@@ -1,3 +1,8 @@
+"""
+This file contains a modified version of the video.py script provided by Udacity. It is no longer a standalone script, but
+integrated to work with the main script behavioral_cloning.py
+"""
+
 from moviepy.editor import ImageSequenceClip
 
 # Custom imports

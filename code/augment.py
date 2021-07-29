@@ -1,3 +1,7 @@
+"""
+This file contains some simple data augmentation functions.
+"""
+
 import numpy as np
 import cv2
 
@@ -8,7 +12,7 @@ def adjust_brightness(yuv_image, brightness_factor):
     Inputs
     ----------
     yuv_image: numpy.ndarray
-        Array containing a single YUV image
+        Numpy array containing a single YUV image
     brightness_factor: float
         Scalar value to darken (lower values) or brighten (higher values) 
        
@@ -37,7 +41,7 @@ def translate_image(image, T_x):
     Inputs
     ----------
     image: numpy.ndarray
-        Array containing a single RGB image
+        Numpy array containing a single RGB image
     T_x: int
         Number of pixels ranslation in the x-dir (along a row)
        

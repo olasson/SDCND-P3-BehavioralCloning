@@ -2,7 +2,6 @@
 This file contains save and load (I/O) functions.
 """
 
-import cv2
 import json
 import pickle
 import numpy as np
@@ -16,18 +15,9 @@ import matplotlib.image as mpimg
 from code.misc import parse_file_path
 
 
-
-# Wrappers
-
-def save_image(file_path, image):
-
-    cv2.imwrite(file_path, image)
-
-    return image
-
 def load_image(file_path):
 
-    #image = cv2.imread(file_path)
+    # Wrapper
 
     image = mpimg.imread(file_path)
 
@@ -46,9 +36,9 @@ def load_images(file_paths):
     Outputs
     -------
     images: numpy.ndarray
-        Array containing 'images'
+        Numpy array containing 'images'
     file_names: numpy.ndarray
-        Array containing the file names - ['myimg1.jpg'... 'myimgN.jpg',]
+        Numpy array containing the file names - ['myimg1.jpg'... 'myimgN.jpg',]
     """
 
     n_images = len(file_paths)
