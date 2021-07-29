@@ -195,6 +195,8 @@ if __name__ == "__main__":
         angle_correction = model_config["angle_correction"]
         angle_flatten = model_config["angle_flatten"]
 
+        file_path_model = model_config["model_path"]
+
         if not file_exists(file_path_data_prepared):
 
             print(INFO_PREFIX + 'Preparing data!')
@@ -208,11 +210,13 @@ if __name__ == "__main__":
 
                 save_pickled_data(file_path_data_prepared, angles, images)
 
-        else:
+        elif (not file_exists(file_path_model)) or flag_data_preview:
             
             print(INFO_PREFIX + 'Loading prepared data located at: ' + file_path_data_prepared)
 
             angles, images = load_pickled_data(file_path_data_prepared)
+        else:
+            print(INFO_PREFIX + 'No data loaded!')
 
         if flag_data_preview:
             
@@ -228,8 +232,6 @@ if __name__ == "__main__":
         lrn_rate = model_config["lrn_rate"]
         batch_size = model_config["batch_size"]
         n_max_epochs = model_config["n_max_epochs"]
-
-        file_path_model = model_config["model_path"]
 
         if not file_exists(file_path_model):
 
