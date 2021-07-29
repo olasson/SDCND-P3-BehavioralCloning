@@ -60,12 +60,6 @@ if __name__ == "__main__":
     # Data
 
     parser.add_argument(
-        '--augment',
-        action = 'store_true',
-        help = 'If enabled, data will be augmented (flipped, translated and brightness correction).'
-    )
-
-    parser.add_argument(
         '--preview',
         action = 'store_true',
         help = 'If enabled, the user can preview the steering angle distribution without processing the images.'
@@ -138,7 +132,6 @@ if __name__ == "__main__":
     flag_show_pickled = is_file_type(file_path_show_images, '.p')
 
     flag_data_preview = args.preview
-    flag_data_augment = args.augment
 
     flag_sim_drive = args.drive
     flag_sim_record = args.record
@@ -196,6 +189,7 @@ if __name__ == "__main__":
         angle_flatten = model_config["angle_flatten"]
 
         file_path_model = model_config["model_path"]
+        flag_data_augment = model_config["augment"]
 
         if not file_exists(file_path_data_prepared):
 
