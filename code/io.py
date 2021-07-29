@@ -10,6 +10,8 @@ from glob import glob
 from pandas import read_csv
 from os.path import join as path_join
 
+import matplotlib.image as mpimg
+
 # Custom imports
 from code.misc import parse_file_path
 
@@ -25,7 +27,9 @@ def save_image(file_path, image):
 
 def load_image(file_path):
 
-    image = cv2.imread(file_path)
+    #image = cv2.imread(file_path)
+
+    image = mpimg.imread(file_path)
 
     return image
 
