@@ -16,7 +16,7 @@ The majority of the project code is located in the folder `code`:
 * [`io.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/code/io.py)
 * [`model.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/code/model.py)
 * [`prepare.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/code/prepare.py)
-* [`plots.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/code/show.py)
+* [`plots.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/code/plots.py)
 * [`drive.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/code/drive.py)
 * [`video.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/code/video.py)
 
