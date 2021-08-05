@@ -284,3 +284,4 @@ The model works reasonably well, able to drive a full lap on both tracks. Howeve
 1. The model swerving at certain parts when driving on the lake track. I am unsure what causes this behavior, but I suspect this is related to the `angle_correction` value. If set too high (0.5 for example), the model would "aggressively" try to correct its trajectory when driving too close to the edge. 
 2. I was unable to drive the jungle track at full speed. Instead, the speed for this track was set to 20. Anything higher, and the car would eventually drive off the track. 
 
+
