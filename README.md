@@ -38,10 +38,6 @@ The videos of the model driving are found in
 
 The following command line arguments are defined:
 
-#### Data
-
-* `--data_meta:` File path to a .csv data file containing sign meta data.
-
 #### Show
 
 * `--show_images:` File path to a simulator driving log (.csv) or a pickled file (.p) file containing a set of prepared images.
@@ -114,8 +110,6 @@ First, lets take a look at images from each camera.
 Note that the angle values is inserted once for each image from the camera. The array `file_names` contains the absolute path to every image saved by the simulator. 
 
 Below is the raw angle distribution, completely unprocessed from the `driving_log.csv`. 
-
-Command: ` python behavioral_cloning.py --show_distribution --angle_correction 0.0 --angle_flatten 0.0`
 
 <p align="center">
   <img width="80%" height="80%" src="https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/images/steering_angle_dist_raw.png">
@@ -203,8 +197,6 @@ The above command creates an augmented dataset based on `driving_log.csv` and st
 
 Here is a random subset of images:
 
-Command: ` python behavioral_cloning.py --data_load 'general_aug.p' --show_images`
-
 <p align="center">
   <img width="80%" height="80%" src="https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/images/data_prepared_02.png">
 </p>
@@ -282,8 +274,6 @@ It trained for 42/50 epochs, and seemes to steadily converge.
 ## Results and Discussion
 
 Below are a couple of snippets from the model driving the car. The full videos are found in the `videos` folder. The best way to validate the model is to downlad it and test it against the Udacity simulatr. 
-
-Command: ` python behavioral_cloning.py --drive --model_name 'general_aug_0001' --speed 30 --record`
 
 <p align="center">
   <img width="50%" height="50%" src="https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/videos/lake_nVidia_02.gif">
