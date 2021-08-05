@@ -83,6 +83,6 @@ After the config file is created run the command
 
 `python behavioral_cloning.py --model_config './config/<config_file_name>.json'`
 
-The [`behavioral_cloning.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/behavioral_cloning.py.py) script will automatically detect if the specified datasets and model exists or not, and create them if needed.
+The [`behavioral_cloning.py`](https://github.com/olasson/SDCND-P3-BehavioralCloning/blob/master/behavioral_cloning.py) script will automatically detect if the specified datasets and model exists or not, and create them if needed.
 
 
