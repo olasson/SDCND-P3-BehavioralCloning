@@ -95,14 +95,6 @@ if __name__ == "__main__":
         help = 'Name of the simulator track used in the recording.',
     )
 
-    # Misc
-
-    parser.add_argument(
-        '--force_save',
-        action = 'store_true',
-        help = 'If enabled, permits overwriting existing data.'
-    )
-
     args = parser.parse_args()
 
     # Init paths
@@ -134,8 +126,6 @@ if __name__ == "__main__":
 
     flag_sim_drive = args.drive
     flag_sim_record = args.record
-
-    flag_force_save = args.force_save
 
     # Folder setup
 
